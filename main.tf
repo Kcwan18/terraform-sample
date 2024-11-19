@@ -37,9 +37,19 @@ output "k3s_module_output" {
   value = {
     "ssh_command"     = "ssh -i 'ssh-key/k3s-key.pem' ec2-user@${module.k3s.instance_public_dns}"
     "check_user_data" = "cat /var/log/cloud-init-output.log"
-    "public_ip"       = module.k3s.instance_public_ip
-    "public_dns"      = module.k3s.instance_public_dns
   }
+  sensitive = false
+}
 
+module "outline" {
+  source = "./modules/outline"
+}
+
+output "outline_module_output" {
+  description = "Commands to interact with Outline server"
+  value = {
+    "ssh_command"     = "ssh -i 'ssh-key/outline-key.pem' ec2-user@${module.outline.instance_public_dns}"
+    "check_user_data" = "cat /var/log/cloud-init-output.log"
+  }
   sensitive = false
 }

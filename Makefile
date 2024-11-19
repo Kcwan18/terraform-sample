@@ -2,7 +2,8 @@
 BUCKET_NAME=kcwan-iac-terraform-sample
 TABLE_NAME=kcwan-iac-terraform-sample-lockid
 REGION=ap-southeast-1
-MODULE_NAME ?= k3s  # Default value if not specified
+MODULE ?= k3s  # Default value if not specified
+APPROVE ?= false  # Default to false, can be overridden with APPROVE=true
 
 # Phony targets to avoid conflicts with files of the same name
 .PHONY: terraform-s3-init terraform-ddb-init terraform-init list-modules setup destroy clean help
@@ -14,8 +15,8 @@ help:
 	@echo "  terraform-ddb-init 	- Create DynamoDB table for state locking"
 	@echo "  terraform-init     	- Initialize Terraform backend (runs s3-init and ddb-init)"
 	@echo "  list-modules       	- List available Terraform modules"
-	@echo "  setup              	- Apply specified module (use MODULE_NAME=xxx)"
-	@echo "  destroy            	- Destroy specified module (use MODULE_NAME=xxx)"
+	@echo "  setup              	- Apply specified module (use MODULE=xxx APPROVE=true/false)"
+	@echo "  destroy            	- Destroy specified module (use MODULE=xxx APPROVE=true/false)"
 	@echo "  clean              	- Clean up local Terraform files"
 
 # Initialize S3 bucket for Terraform state
@@ -59,23 +60,31 @@ list-modules:
 
 # Apply specified module
 setup:
-	@if [ -z "$$(find modules -type d -name "$(MODULE_NAME)")" ]; then \
-		echo "Error: Module '$(MODULE_NAME)' not found"; \
+	@if [ -z "$$(find modules -type d -name "$(MODULE)")" ]; then \
+		echo "Error: Module '$(MODULE)' not found"; \
 		exit 1; \
 	fi
-	@echo "Applying module $(MODULE_NAME)..."
+	@echo "Applying module $(MODULE)..."
 	@terraform init
-	@terraform apply -target=module.$(MODULE_NAME) -auto-approve
+	@if [ "$(APPROVE)" = "true" ]; then \
+		terraform apply -target=module.$(MODULE) -auto-approve; \
+	else \
+		terraform apply -target=module.$(MODULE); \
+	fi
 
 # Destroy specified module
 destroy:
-	@if [ -z "$$(find modules -type d -name "$(MODULE_NAME)")" ]; then \
-		echo "Error: Module '$(MODULE_NAME)' not found"; \
+	@if [ -z "$$(find modules -type d -name "$(MODULE)")" ]; then \
+		echo "Error: Module '$(MODULE)' not found"; \
 		exit 1; \
 	fi
-	@echo "Destroying module $(MODULE_NAME)..."
+	@echo "Destroying module $(MODULE)..."
 	@terraform init
-	@terraform destroy -target=module.$(MODULE_NAME) -auto-approve
+	@if [ "$(APPROVE)" = "true" ]; then \
+		terraform destroy -target=module.$(MODULE) -auto-approve; \
+	else \
+		terraform destroy -target=module.$(MODULE); \
+	fi
 
 # Clean up local files
 clean:
