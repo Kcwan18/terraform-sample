@@ -6,19 +6,40 @@ terraform {
     encrypt        = true
     dynamodb_table = "kcwan-iac-terraform-sample-lockid"
   }
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+  required_version = ">= 1.0.0"
 }
 
 provider "aws" {
   region = var.aws_provider.region
+
+  default_tags {
+    tags = {
+      Environment = "dev"
+      Terraform   = "true"
+    }
+  }
 }
 
 module "k3s" {
   source = "./modules/k3s"
 }
+
 output "k3s_module_output" {
-  description = "K3s module"
+  description = "Commands to interact with K3s cluster"
   value = {
     "ssh_command"     = "ssh -i 'ssh-key/k3s-key.pem' ec2-user@${module.k3s.instance_public_dns}"
     "check_user_data" = "cat /var/log/cloud-init-output.log"
+    "public_ip"       = module.k3s.instance_public_ip
+    "public_dns"      = module.k3s.instance_public_dns
   }
+
+  sensitive = false
 }
