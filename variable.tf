@@ -3,3 +3,7 @@ variable "aws_provider" {
     region = string
   })
 }
+
+variable "slack_webhook_url" {
+  type = string
+}

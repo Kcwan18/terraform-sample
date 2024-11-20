@@ -83,13 +83,10 @@ resource "aws_instance" "outline_instance" {
               echo "$OUTLINE_CONFIG" | grep -o '{.*}' > /home/ec2-user/outline-config.json
               chown ec2-user:ec2-user /home/ec2-user/outline-config.json
 
-              # Send configuration to SNS
+              # Send configuration to Slack
               CONFIG_JSON=$(cat /home/ec2-user/outline-config.json)
-              aws sns publish \
-                --region ${data.aws_region.current.name} \
-                --topic-arn ${aws_sns_topic.outline_config.arn} \
-                --message "$CONFIG_JSON" \
-                --subject "Outline Server Configuration"
+              jsonvariable="{'text':'Outline Server Configuration: $CONFIG_JSON'}"
+              curl -X POST -H 'Content-type: application/json' --data "$jsonvariable" ${var.slack_webhook_url}
               EOF
 
   tags = {
@@ -100,7 +97,7 @@ resource "aws_instance" "outline_instance" {
   iam_instance_profile = aws_iam_instance_profile.outline_instance_profile.name
 }
 
-# Create IAM role and policy for EC2 to publish to SNS
+# Create IAM role and policy for EC2 
 resource "aws_iam_role" "outline_instance_role" {
   name = "outline-instance-role"
 

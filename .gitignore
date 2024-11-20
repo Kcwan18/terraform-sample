@@ -1,3 +1,4 @@
 ssh-key/
 .terraform.lock.hcl
 .terraform/
+terraform.tfvars

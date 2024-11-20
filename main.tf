@@ -43,6 +43,7 @@ output "k3s_module_output" {
 
 module "outline" {
   source = "./modules/outline"
+  slack_webhook_url = var.slack_webhook_url
 }
 
 output "outline_module_output" {
