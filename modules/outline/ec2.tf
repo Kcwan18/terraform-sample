@@ -74,7 +74,18 @@ resource "aws_instance" "outline_instance" {
   user_data = <<-EOF
               #!/bin/bash
               sudo su
-              dnf install wget jq awscli -y
+              
+              # Function to send Slack notification
+              send_slack_notification() {
+                message=$1
+                curl -X POST -H 'Content-type: application/json' \
+                  --data "$message" ${var.slack_webhook_url}
+              }
+
+              send_slack_notification "🚀 Starting Outline server installation..."
+
+              # Install required packages
+              dnf install wget jq awscli docker -y
               
               # Run Outline installation
               OUTLINE_CONFIG=$(bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-server/master/src/server_manager/install_scripts/install_server.sh)")
@@ -83,10 +94,17 @@ resource "aws_instance" "outline_instance" {
               echo "$OUTLINE_CONFIG" | grep -o '{.*}' > /home/ec2-user/outline-config.json
               chown ec2-user:ec2-user /home/ec2-user/outline-config.json
 
-              # Send configuration to Slack
-              CONFIG_JSON=$(cat /home/ec2-user/outline-config.json)
-              jsonvariable="{'text':'Outline Server Configuration: $CONFIG_JSON'}"
-              curl -X POST -H 'Content-type: application/json' --data "$jsonvariable" ${var.slack_webhook_url}
+              # Check if config file is not empty
+              if [ -s /home/ec2-user/outline-config.json ]; then
+                CONFIG_JSON=$(cat /home/ec2-user/outline-config.json)
+                jsonvariable="{'text':'✅ Outline server installation successful! Copy below key to your outline manager :point_down::point_down: \n $CONFIG_JSON'}"
+                send_slack_notification "$jsonvariable"
+              else
+                error_msg=$(journalctl -u outline-server | tail -n 5)
+                jsonvariable="{'text':'❌ Outline server installation failed. Last logs:\n$error_msg'}"
+                send_slack_notification "$jsonvariable"
+                exit 1
+              fi
               EOF
 
   tags = {

@@ -1,5 +1,6 @@
 aws_provider = {
   region = "ap-southeast-1"
+  profile = "default"
 }
 
 slack_webhook_url = 

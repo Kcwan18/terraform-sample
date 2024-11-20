@@ -55,7 +55,37 @@ resource "aws_instance" "k3s_instance" {
 
   user_data = <<-EOF
               #!/bin/bash
-              curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+              
+              sudo su
+
+              # Install required packages
+              dnf install -y jq
+
+              # Function to send Slack notification
+              send_slack_notification() {
+                message=$1
+                curl -X POST -H 'Content-type: application/json' \
+                  --data "{\"text\":\"$message\"}" ${var.slack_webhook_url}
+              }
+
+              # Install K3s
+              if curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644; then
+                # Wait for K3s to be ready
+                timeout=60
+                while [ $timeout -gt 0 ]; do
+                  if kubectl get node 2>/dev/null | grep -q "Ready"; then
+                    send_slack_notification "✅ K3s installation successful and node is Ready"
+                    exit 0
+                  fi
+                  sleep 5
+                  ((timeout-=5))
+                done
+                send_slack_notification "⚠️ K3s installation completed but node not Ready after 60s"
+              else
+                error_msg=$(journalctl -u k3s | tail -n 5)
+                send_slack_notification "❌ K3s installation failed. Last logs:\n$error_msg"
+                exit 1
+              fi
               EOF
 
   tags = {

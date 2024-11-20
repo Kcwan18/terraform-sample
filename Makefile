@@ -6,7 +6,7 @@ MODULE ?= k3s  # Default value if not specified
 APPROVE ?= false  # Default to false, can be overridden with APPROVE=true
 
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: terraform-s3-init terraform-ddb-init terraform-init list-modules setup destroy clean help
+.PHONY: terraform-s3-init terraform-ddb-init terraform-init list-modules apply destroy clean help
 
 # Help target to display available commands
 help:
@@ -15,7 +15,7 @@ help:
 	@echo "  terraform-ddb-init 	- Create DynamoDB table for state locking"
 	@echo "  terraform-init     	- Initialize Terraform backend (runs s3-init and ddb-init)"
 	@echo "  list-modules       	- List available Terraform modules"
-	@echo "  setup              	- Apply specified module (use MODULE=xxx APPROVE=true/false)"
+	@echo "  apply              	- Apply specified module (use MODULE=xxx APPROVE=true/false)"
 	@echo "  destroy            	- Destroy specified module (use MODULE=xxx APPROVE=true/false)"
 	@echo "  clean              	- Clean up local Terraform files"
 
@@ -59,7 +59,7 @@ list-modules:
 	@find modules -type d -depth 1 | sed 's|modules/||'
 
 # Apply specified module
-setup:
+apply:
 	@if [ -z "$$(find modules -type d -name "$(MODULE)")" ]; then \
 		echo "Error: Module '$(MODULE)' not found"; \
 		exit 1; \

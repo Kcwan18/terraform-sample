@@ -1,12 +1,19 @@
 terraform {
-  backend "s3" {
-    bucket         = "kcwan-iac-terraform-sample"
-    key            = "state/terraform.tfstate"
-    region         = "ap-southeast-1"
-    encrypt        = true
-    dynamodb_table = "kcwan-iac-terraform-sample-lockid"
-  }
+  # backend "s3" {
+  #   bucket         = "kcwan-iac-terraform-sample"
+  #   key            = "state/terraform.tfstate"
+  #   region         = "ap-southeast-1"
+  #   encrypt        = true
+  #   dynamodb_table = "kcwan-iac-terraform-sample-lockid"
+  # }
 
+  cloud { 
+    organization = "kcwan" 
+
+    workspaces { 
+      name = "personal" 
+    } 
+  } 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -18,7 +25,7 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_provider.region
+  region  = var.aws_provider.region
 
   default_tags {
     tags = {
@@ -30,6 +37,7 @@ provider "aws" {
 
 module "k3s" {
   source = "./modules/k3s"
+  slack_webhook_url = var.slack_webhook_url
 }
 
 output "k3s_module_output" {
