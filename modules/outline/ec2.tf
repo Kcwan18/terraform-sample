@@ -82,14 +82,23 @@ resource "aws_instance" "outline_instance" {
                   --data "$message" ${var.slack_webhook_url}
               }
 
-              send_slack_notification "🚀 Starting Outline server installation..."
-
+              # Get instance metadata
+              TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` 
+              INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+              REGION=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
+              DATETIME=$(date '+%Y-%m-%d %H:%M:%S')
+              
+              # Send instance ready notification
+              ready_msg="{'text':'🚀 New Outline instance is ready! \n Instance_ID: *$INSTANCE_ID* \n Region: *$REGION* \n Launched_At: *$DATETIME*'}"
+              send_slack_notification "$ready_msg"
+              
               # Install required packages
               dnf install wget jq awscli docker -y
               
               # Run Outline installation
               OUTLINE_CONFIG=$(bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-server/master/src/server_manager/install_scripts/install_server.sh)")
               
+
               # Extract and save the API configuration
               echo "$OUTLINE_CONFIG" | grep -o '{.*}' > /home/ec2-user/outline-config.json
               chown ec2-user:ec2-user /home/ec2-user/outline-config.json

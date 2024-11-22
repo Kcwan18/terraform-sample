@@ -58,9 +58,6 @@ resource "aws_instance" "k3s_instance" {
               
               sudo su
 
-              # Install required packages
-              dnf install -y jq
-
               # Function to send Slack notification
               send_slack_notification() {
                 message=$1
@@ -68,10 +65,23 @@ resource "aws_instance" "k3s_instance" {
                   --data "{\"text\":\"$message\"}" ${var.slack_webhook_url}
               }
 
+              # Get instance metadata
+              TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` 
+              INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+              REGION=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
+              DATETIME=$(date '+%Y-%m-%d %H:%M:%S')
+
+              # Install required packages
+              dnf install -y jq
+
+              # Send instance ready notification
+              ready_msg="🚀 New K3s instance is ready! \n Instance_ID: *$INSTANCE_ID* \n Region: *$REGION* \n Launched_At: *$DATETIME*"
+              send_slack_notification "$ready_msg"
+
               # Install K3s
               if curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644; then
                 # Wait for K3s to be ready
-                timeout=60
+                timeout=30
                 while [ $timeout -gt 0 ]; do
                   if kubectl get node 2>/dev/null | grep -q "Ready"; then
                     send_slack_notification "✅ K3s installation successful and node is Ready"
