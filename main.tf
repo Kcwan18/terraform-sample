@@ -40,25 +40,13 @@ module "k3s" {
   slack_webhook_url = var.slack_webhook_url
 }
 
-output "k3s_module_output" {
-  description = "Commands to interact with K3s cluster"
-  value = {
-    "ssh_command"     = "ssh -i 'ssh-key/k3s-key.pem' ec2-user@${module.k3s.instance_public_dns}"
-    "check_user_data" = "cat /var/log/cloud-init-output.log"
-  }
-  sensitive = false
-}
-
 module "outline" {
   source = "./modules/outline"
   slack_webhook_url = var.slack_webhook_url
 }
 
-output "outline_module_output" {
-  description = "Commands to interact with Outline server"
-  value = {
-    "ssh_command"     = "ssh -i 'ssh-key/outline-key.pem' ec2-user@${module.outline.instance_public_dns}"
-    "check_user_data" = "cat /var/log/cloud-init-output.log"
-  }
-  sensitive = false
+module "eks" {
+  source = "./modules/eks"
+  slack_webhook_url = var.slack_webhook_url
 }
+
