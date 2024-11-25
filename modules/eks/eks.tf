@@ -12,11 +12,33 @@ resource "aws_eks_cluster" "main" {
     endpoint_public_access  = true
   }
 
+  # Enable IAM Roles for Service Accounts
+  enabled_cluster_log_types = ["api", "audit", "authenticator"]
+
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster_policy
   ]
 }
 
+# Create aws-auth ConfigMap to grant cluster admin access
+resource "kubernetes_config_map" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = {
+    mapUsers = yamlencode([
+      {
+        userarn  = data.aws_caller_identity.current.arn
+        username = "admin"
+        groups   = ["system:masters"]
+      }
+    ])
+  }
+
+  depends_on = [aws_eks_cluster.main]
+}
 
 # Create EKS node group
 resource "aws_eks_node_group" "main" {

@@ -1,5 +1,6 @@
-# Get current region data
+# Get current data
 data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
 
 # Get latest Amazon Linux 2023 AMI
 data "aws_ami" "amazon_linux_2023" {
