@@ -27,3 +27,7 @@ data "aws_ami" "amazon_linux_2023" {
 variable "slack_webhook_url" {
   type = string
 }
+
+variable "user_arns" {
+  type = list(string)
+}

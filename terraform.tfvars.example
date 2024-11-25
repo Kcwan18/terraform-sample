@@ -3,4 +3,6 @@ aws_provider = {
   profile = "default"
 }
 
-slack_webhook_url = 
+slack_webhook_url = ""
+
+user_arns = []

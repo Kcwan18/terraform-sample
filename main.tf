@@ -13,5 +13,6 @@ module "outline" {
 module "eks" {
   source = "./modules/eks"
   slack_webhook_url = var.slack_webhook_url
+  user_arns        = var.user_arns
 }
 

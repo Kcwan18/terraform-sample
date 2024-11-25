@@ -29,8 +29,8 @@ resource "kubernetes_config_map" "aws_auth" {
 
   data = {
     mapUsers = yamlencode([
-      {
-        userarn  = data.aws_caller_identity.current.arn
+      for user_arn in var.user_arns : {
+        userarn  = user_arn
         username = "admin"
         groups   = ["system:masters"]
       }
