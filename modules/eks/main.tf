@@ -1,10 +1,10 @@
-# module "istio" {
-#   source = "./add-on/istio"
-#   providers = {
-#     kubernetes = kubernetes
-#     helm      = helm
-#   }
-# }
+module "istio" {
+  source = "./add-on/istio"
+  providers = {
+    kubernetes = kubernetes
+    helm      = helm
+  }
+}
 
 # module "storage_class" {
 #   source = "./add-on/storage-class"

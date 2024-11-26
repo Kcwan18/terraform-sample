@@ -32,10 +32,17 @@ resource "kubernetes_config_map" "aws_auth" {
   }
 
   data = {
+    mapRoles = yamlencode([
+      {
+        rolearn  = aws_iam_role.eks_nodes.arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups   = ["system:bootstrappers", "system:nodes"]
+      }
+    ])
     mapUsers = yamlencode([
       for user_arn in var.user_arns : {
         userarn  = user_arn
-        username = split("/", user_arn)[1] # Extract username from ARN
+        username = split("/", user_arn)[1]
         groups   = ["system:masters"]
       }
     ])
@@ -62,7 +69,7 @@ resource "aws_eks_addon" "vpc_cni" {
   depends_on = [aws_eks_cluster.main]
 }
 
-# Create EKS node group
+ # Create EKS node group
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = "eks-node-group"
@@ -70,9 +77,9 @@ resource "aws_eks_node_group" "main" {
   subnet_ids      = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
 
   scaling_config {
-    desired_size = 1
-    max_size     = 2 # Increased for better scalability
-    min_size     = 1
+    desired_size = 2
+    max_size     = 3 # Increased for better scalability
+    min_size     = 2
   }
 
   labels = {
