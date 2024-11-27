@@ -2,6 +2,7 @@ resource "kubernetes_namespace" "istio_ingress" {
   metadata {
     name = "istio-ingress"
   }
+  depends_on = [helm_release.istiod]
 }
 
 resource "helm_release" "istio_ingress" {
@@ -29,7 +30,8 @@ resource "helm_release" "istio_ingress" {
 
   set {
     name  = "service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-cross-zone-load-balancing-enabled"
-    value = true
+    value = "true"
+    type  = "string"
   }
 
   set {
@@ -44,3 +46,5 @@ resource "helm_release" "istio_ingress" {
 
   depends_on = [helm_release.istiod]
 }
+
+

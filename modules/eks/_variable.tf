@@ -23,6 +23,10 @@ data "aws_ami" "amazon_linux_2023" {
   }
 }
 
+variable "eks_cluster_name" {
+  type = string
+  default = "eks-cluster"
+}
 
 variable "slack_webhook_url" {
   type = string
@@ -31,3 +35,5 @@ variable "slack_webhook_url" {
 variable "user_arns" {
   type = list(string)
 }
+
+

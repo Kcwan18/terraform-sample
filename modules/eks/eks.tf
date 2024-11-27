@@ -1,7 +1,7 @@
 
 # Create EKS cluster
 resource "aws_eks_cluster" "main" {
-  name     = "eks-cluster"
+  name     = var.eks_cluster_name
   role_arn = aws_iam_role.eks_cluster.arn
   version  = "1.31"
 
