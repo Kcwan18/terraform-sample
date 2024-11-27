@@ -77,9 +77,9 @@ resource "aws_eks_node_group" "main" {
   subnet_ids      = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
 
   scaling_config {
-    desired_size = 2
+    desired_size = 1
     max_size     = 3 # Increased for better scalability
-    min_size     = 2
+    min_size     = 1
   }
 
   labels = {

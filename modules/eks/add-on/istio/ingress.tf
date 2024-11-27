@@ -6,10 +6,10 @@ resource "kubernetes_namespace" "istio_ingress" {
 }
 
 resource "helm_release" "istio_ingress" {
-  name             = "istio-ingress"
+  name             = var.istio_ingress_name
   repository       = var.istio_repository
   chart            = "gateway"
-  namespace        = "istio-ingress"
+  namespace        = kubernetes_namespace.istio_ingress.metadata[0].name
   create_namespace = false
   wait             = true
 
@@ -47,4 +47,24 @@ resource "helm_release" "istio_ingress" {
   depends_on = [helm_release.istiod]
 }
 
+data "http" "gateway_api_crds" {
+  url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml"
+}
 
+locals {
+  gateway_api_crds = [
+    for doc in split("---", data.http.gateway_api_crds.response_body) : doc
+    if length(regexall("^\\s*#", doc)) == 0 && 
+       length(regexall("^\\s*$", doc)) == 0
+  ]
+}
+
+resource "kubernetes_manifest" "gateway_api_crds" {
+  for_each = { for idx, doc in local.gateway_api_crds : idx => doc }
+  manifest = {
+    for k, v in yamldecode(each.value) : k => v
+    if k != "status"
+  }
+
+  depends_on = [helm_release.istiod]
+}
