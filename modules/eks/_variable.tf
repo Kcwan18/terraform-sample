@@ -37,3 +37,14 @@ variable "user_arns" {
 }
 
 
+variable "enable_kiali" {
+  type        = bool
+  default     = false
+  description = "Enable Kiali deployment in EKS cluster"
+}
+
+variable "enable_bookinfo" {
+  type        = bool
+  default     = false
+  description = "Enable Bookinfo sample application deployment in EKS cluster"
+}

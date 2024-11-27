@@ -1,14 +1,21 @@
 variable "istio_repository" {
-  type = string
+  type    = string
   default = "https://istio-release.storage.googleapis.com/charts"
 }
 
 variable "istio_ingress_name" {
-  type = string
+  type    = string
   default = "ingressgateway"
 }
 
-# variable "subnet_ids" {
-#   type        = list(string)
-#   description = "List of subnet IDs where the load balancer can be created"
-# }
+variable "enable_kiali" {
+  type        = bool
+  default     = false
+  description = "Enable Kiali deployment"
+}
+
+variable "enable_bookinfo" {
+  type        = bool
+  default     = false
+  description = "Enable Bookinfo sample application deployment"
+}

@@ -37,3 +37,15 @@ variable "user_arns" {
     error_message = "All ARNs must be valid AWS IAM or STS ARNs in the format arn:aws:(iam|sts)::<account_id>:(user|role|assumed-role)/"
   }
 }
+
+variable "enable_kiali" {
+  type        = bool
+  default     = false
+  description = "Enable Kiali deployment in EKS cluster"
+}
+
+variable "enable_bookinfo" {
+  type        = bool
+  default     = false
+  description = "Enable Bookinfo sample application deployment in EKS cluster"
+}

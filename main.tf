@@ -14,5 +14,7 @@ module "eks" {
   source = "./modules/eks"
   slack_webhook_url = var.slack_webhook_url
   user_arns        = var.user_arns
+  enable_kiali      = var.enable_kiali
+  enable_bookinfo   = var.enable_bookinfo
 }
 

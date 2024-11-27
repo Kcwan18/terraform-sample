@@ -6,3 +6,6 @@ aws_provider = {
 slack_webhook_url = ""
 
 user_arns = []
+
+enable_kiali = false
+enable_bookinfo = false
