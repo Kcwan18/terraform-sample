@@ -23,5 +23,6 @@ output "eks_module_output" {
   value = {
     # "cluster_endpoint" = module.eks.cluster_endpoint
     "connect_command" = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.aws_provider.region}"
+    "istio_nlb_endpoint" = module.eks.istio_nlb_endpoint
   }
 }

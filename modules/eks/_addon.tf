@@ -4,7 +4,6 @@ module "istio" {
     kubernetes = kubernetes
     helm       = helm
   }
-
 }
 
 
