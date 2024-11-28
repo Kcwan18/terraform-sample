@@ -1,5 +1,5 @@
 module "istio" {
-  source = "./add-on/istio"
+  source = "./cluster-addon/istio"
   providers = {
     kubernetes = kubernetes
     helm       = helm
@@ -8,3 +8,11 @@ module "istio" {
 }
 
 
+module "prometheus" {
+  source = "./cluster-addon/prometheus"
+  providers = {
+    kubernetes = kubernetes
+    helm       = helm
+  }
+  istio_ingress_name = module.istio.istio_ingress_name
+}
