@@ -4,8 +4,7 @@ module "istio" {
     kubernetes = kubernetes
     helm       = helm
   }
-  enable_kiali    = var.enable_kiali
-  enable_bookinfo = var.enable_bookinfo
+
 }
 
 

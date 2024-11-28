@@ -35,16 +35,3 @@ variable "slack_webhook_url" {
 variable "user_arns" {
   type = list(string)
 }
-
-
-variable "enable_kiali" {
-  type        = bool
-  default     = false
-  description = "Enable Kiali deployment in EKS cluster"
-}
-
-variable "enable_bookinfo" {
-  type        = bool
-  default     = false
-  description = "Enable Bookinfo sample application deployment in EKS cluster"
-}

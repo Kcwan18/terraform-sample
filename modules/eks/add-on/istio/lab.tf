@@ -1,6 +1,4 @@
 resource "kubernetes_namespace" "bookinfo" {
-  count = var.enable_bookinfo ? 1 : 0
-  
   metadata {
     name = "bookinfo"
     labels = {
@@ -12,8 +10,6 @@ resource "kubernetes_namespace" "bookinfo" {
 
 
 resource "kubernetes_manifest" "bookinfo_productpage" {
-  count = var.enable_bookinfo ? 1 : 0
-  
   manifest = yamldecode(<<-YAML
     apiVersion: v1
     kind: Service
@@ -31,12 +27,10 @@ resource "kubernetes_manifest" "bookinfo_productpage" {
         app: productpage
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_productpage_deployment" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: apps/v1
     kind: Deployment
@@ -68,12 +62,10 @@ resource "kubernetes_manifest" "bookinfo_productpage_deployment" {
               runAsUser: 1000
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_details" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: v1
     kind: Service
@@ -91,12 +83,10 @@ resource "kubernetes_manifest" "bookinfo_details" {
         app: details
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_details_deployment" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: apps/v1
     kind: Deployment
@@ -128,12 +118,10 @@ resource "kubernetes_manifest" "bookinfo_details_deployment" {
               runAsUser: 1000
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_ratings" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: v1
     kind: Service
@@ -151,12 +139,10 @@ resource "kubernetes_manifest" "bookinfo_ratings" {
         app: ratings
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_ratings_deployment" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: apps/v1
     kind: Deployment
@@ -188,12 +174,10 @@ resource "kubernetes_manifest" "bookinfo_ratings_deployment" {
               runAsUser: 1000
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_reviews" {
-  count = var.enable_bookinfo ? 1 : 0   
-
   manifest = yamldecode(<<-YAML
     apiVersion: v1
     kind: Service
@@ -211,12 +195,10 @@ resource "kubernetes_manifest" "bookinfo_reviews" {
         app: reviews
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_reviews_v1_deployment" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: apps/v1
     kind: Deployment
@@ -251,12 +233,10 @@ resource "kubernetes_manifest" "bookinfo_reviews_v1_deployment" {
               runAsUser: 1000
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_reviews_v2_deployment" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: apps/v1
     kind: Deployment
@@ -291,12 +271,10 @@ resource "kubernetes_manifest" "bookinfo_reviews_v2_deployment" {
               runAsUser: 1000
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_reviews_v3_deployment" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: apps/v1
     kind: Deployment
@@ -331,12 +309,10 @@ resource "kubernetes_manifest" "bookinfo_reviews_v3_deployment" {
               runAsUser: 1000
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_gateway" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: networking.istio.io/v1alpha3
     kind: Gateway
@@ -355,12 +331,10 @@ resource "kubernetes_manifest" "bookinfo_gateway" {
         - "*"
   YAML
   )
-  depends_on = [kubernetes_namespace.bookinfo[0]]
+  depends_on = [kubernetes_namespace.bookinfo]
 }
 
 resource "kubernetes_manifest" "bookinfo_virtualservice" {
-  count = var.enable_bookinfo ? 1 : 0
-
   manifest = yamldecode(<<-YAML
     apiVersion: networking.istio.io/v1alpha3
     kind: VirtualService
@@ -391,5 +365,5 @@ resource "kubernetes_manifest" "bookinfo_virtualservice" {
               number: 9080
   YAML
   )
-  depends_on = [kubernetes_manifest.bookinfo_gateway[0]]
+  depends_on = [kubernetes_manifest.bookinfo_gateway]
 }
