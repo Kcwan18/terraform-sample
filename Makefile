@@ -92,3 +92,10 @@ clean:
 	@rm -rf .terraform
 	@rm -f terraform.tfstate*
 	@rm -f .terraform.lock.hcl
+
+
+force-delete-namespace:
+	@echo "Force deleting namespace $(NAMESPACE)..."
+	@kubectl get namespace $(NAMESPACE) -o json | \
+		jq '.spec.finalizers = []' | \
+		kubectl replace --raw "/api/v1/namespaces/$(NAMESPACE)/finalize" -f -

@@ -30,4 +30,31 @@ resource "helm_release" "kiali" {
     value = "anonymous"
   }
 
+  set {
+    name  = "cr.spec.external_services.prometheus.url"
+    value = "http://prometheus-server.monitor:80"
+  }
+
+  set {
+    name  = "cr.spec.external_services.grafana.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "cr.spec.external_services.grafana.internal_url"
+    value = "http://grafana.monitor:80"
+  }
+
+#   set {
+#     name  = "cr.spec.external_services.grafana.dashboards"
+#     value = jsonencode([
+#       {
+#         name = "Istio Service Dashboard"
+#         variables = {
+#           namespace = "var-namespace"
+#           service   = "var-service"
+#         }
+#       }
+#     ])
+#   }
 }

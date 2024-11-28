@@ -7,8 +7,8 @@ module "istio" {
 }
 
 
-module "prometheus" {
-  source = "./cluster-addon/prometheus"
+module "monitor" {
+  source = "./cluster-addon/monitor"
   providers = {
     kubernetes = kubernetes
     helm       = helm
