@@ -11,7 +11,25 @@ terraform {
   }
 }
 
-variable "istio_ingress_name" {
-  type    = string
+
+variable "istio_ingress" {
+  type = object({
+    name = string
+    nlb_endpoint = string
+  })
 }
 
+data "aws_route53_zone" "lab" {
+  name = "lab.one2.cloud"
+}
+
+variable "domain" {
+  type = object({
+    grafana = string
+    prometheus = string
+  })
+  default = {
+    grafana = "grafana.lab.one2.cloud"
+    prometheus = "prometheus.lab.one2.cloud"
+  }
+}

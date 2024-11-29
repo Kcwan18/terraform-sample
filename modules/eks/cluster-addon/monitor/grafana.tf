@@ -55,14 +55,14 @@ resource "kubernetes_manifest" "grafana_gateway" {
       namespace: ${kubernetes_namespace.monitor.metadata[0].name}
     spec:
       selector:
-        istio: ${var.istio_ingress_name}
+        istio: ${var.istio_ingress.name}
       servers:
       - port:
           number: 80
           name: http
           protocol: HTTP
         hosts:
-        - "grafana.lab.one2.cloud"
+        - ${var.domain.grafana}
   YAML
   )
   depends_on = [helm_release.grafana]
@@ -78,7 +78,7 @@ resource "kubernetes_manifest" "grafana_virtualservice" {
       namespace: ${kubernetes_namespace.monitor.metadata[0].name}
     spec:
       hosts:
-      - "grafana.lab.one2.cloud"
+      - ${var.domain.grafana}
       gateways:
       - grafana-gateway
       http:
@@ -90,4 +90,13 @@ resource "kubernetes_manifest" "grafana_virtualservice" {
   YAML
   )
   depends_on = [kubernetes_manifest.grafana_gateway]
+}
+
+
+resource "aws_route53_record" "grafana" {
+  zone_id = data.aws_route53_zone.lab.zone_id
+  name    = var.domain.grafana
+  type    = "CNAME"
+  ttl     = "300"
+  records = [var.istio_ingress.nlb_endpoint]
 }

@@ -7,14 +7,14 @@ resource "kubernetes_manifest" "kiali_gateway" {
       namespace: istio-system
     spec:
       selector:
-        istio: ${var.istio_ingress_name}
+        istio: ${var.istio_ingress.name}
       servers:
       - port:
           number: 80
           name: http
           protocol: HTTP
         hosts:
-        - "*"
+        - ${var.domain.kiali}
   YAML
   )
   depends_on = [helm_release.kiali]
@@ -29,14 +29,11 @@ resource "kubernetes_manifest" "kiali_virtualservice" {
       namespace: istio-system
     spec:
       hosts:
-      - "*"
+      - ${var.domain.kiali}
       gateways:
       - kiali-gateway
       http:
-      - match:
-        - uri:
-            prefix: /kiali
-        route:
+      - route:
         - destination:
             host: kiali
             port:
@@ -44,4 +41,13 @@ resource "kubernetes_manifest" "kiali_virtualservice" {
   YAML
   )
   depends_on = [kubernetes_manifest.kiali_gateway]
+}
+
+
+resource "aws_route53_record" "kiali" {
+  zone_id = data.aws_route53_zone.lab.zone_id
+  name    = var.domain.kiali
+  type    = "CNAME"
+  ttl     = "300"
+  records = [var.istio_ingress.nlb_endpoint]
 }

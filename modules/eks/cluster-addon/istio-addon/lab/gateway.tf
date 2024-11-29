@@ -9,7 +9,7 @@ resource "kubernetes_manifest" "bookinfo_gateway" {
       namespace: bookinfo
     spec:
       selector:
-        istio: ${var.istio_ingress_name}
+        istio: ${var.istio_ingress.name}
       servers:
       - port:
           number: 80

@@ -10,7 +10,23 @@ terraform {
     }
   }
 }
-variable "istio_ingress_name" {
-  type    = string
+
+variable "istio_ingress" {
+  type = object({
+    name = string
+    nlb_endpoint = string
+  })
 }
 
+data "aws_route53_zone" "lab" {
+  name = "lab.one2.cloud"
+}
+
+variable "domain" {
+  type = object({
+    kiali = string
+  })
+  default = {
+    kiali = "kiali.lab.one2.cloud"
+  }
+}
