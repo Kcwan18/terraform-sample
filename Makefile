@@ -56,7 +56,7 @@ terraform-init: terraform-s3-init terraform-ddb-init
 # List all module names
 list-modules:
 	@echo "Available modules:"
-	@find modules -type d -depth 1 | sed 's|modules/||'
+	@find modules -mindepth 1 -type d -exec basename {} \; | sort | uniq
 
 # Apply specified module
 apply:

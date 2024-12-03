@@ -3,3 +3,4 @@ ssh-key/
 .terraform/
 terraform.tfvars
 tmp.yaml
+outline

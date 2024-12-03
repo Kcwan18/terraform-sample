@@ -7,7 +7,6 @@ resource "kubernetes_namespace" "kiali" {
   }
 }
 
-
 resource "helm_release" "kiali" {
   name             = "kiali"
   repository       = "https://kiali.org/helm-charts"
@@ -44,6 +43,36 @@ resource "helm_release" "kiali" {
     name  = "cr.spec.external_services.grafana.internal_url"
     value = "http://grafana.monitor:80"
   }
+
+  set {
+    name  = "cr.spec.deployment.accessible_namespaces"
+    value = "[\"**\"]"
+  }
+
+  # set {
+  #   name  = "cr.spec.istio_namespace"
+  #   value = "istio-system"
+  # }
+
+  # set {
+  #   name  = "cr.spec.deployment.ingress_enabled"
+  #   value = "true"
+  # }
+
+  # set {
+  #   name  = "cr.spec.server.web_root"
+  #   value = "/kiali"
+  # }
+
+  # set {
+  #   name  = "cr.spec.external_services.istio.gateway_selector.istio"
+  #   value = "ingressgateway"
+  # }
+
+  # set {
+  #   name  = "cr.spec.external_services.istio.gateway_selector_namespace"
+  #   value = "istio-system"
+  # }
 
 #   set {
 #     name  = "cr.spec.external_services.grafana.dashboards"

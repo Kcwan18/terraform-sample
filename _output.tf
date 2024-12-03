@@ -21,8 +21,13 @@ output "outline_module_output" {
 output "eks_module_output" {
   description = "Commands to interact with EKS cluster"
   value = {
-    # "cluster_endpoint" = module.eks.cluster_endpoint
     "connect_command" = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.aws_provider.region}"
-    "istio_nlb_endpoint" = module.eks.istio_nlb_endpoint
+  }
+}
+
+output "istio_module_output" {
+  description = "Commands to interact with Istio"
+  value = {
+    "istio_ingress_gateway_endpoint" = module.istio.nlb_endpoint
   }
 }

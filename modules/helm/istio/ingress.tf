@@ -1,15 +1,15 @@
-resource "kubernetes_namespace" "istio_ingress" {
-  metadata {
-    name = "istio-ingress"
-  }
-  depends_on = [helm_release.istiod]
-}
+# resource "kubernetes_namespace" "istio_ingress" {
+#   metadata {
+#     name = "istio-ingress"
+#   }
+#   depends_on = [helm_release.istiod]
+# }
 
 resource "helm_release" "istio_ingress" {
   name             = var.istio_ingress_name
   repository       = var.istio_repository
   chart            = "gateway"
-  namespace        = kubernetes_namespace.istio_ingress.metadata[0].name
+  namespace        = kubernetes_namespace.istio_system.metadata[0].name
   create_namespace = false
   wait             = true
 

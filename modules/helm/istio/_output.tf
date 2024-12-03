@@ -6,7 +6,7 @@ output "istio_ingress_name" {
 data "kubernetes_service" "istio_ingress" {
   metadata {
     name      = var.istio_ingress_name
-    namespace = kubernetes_namespace.istio_ingress.metadata[0].name
+    namespace = kubernetes_namespace.istio_system.metadata[0].name
   }
   depends_on = [helm_release.istio_ingress]
 }

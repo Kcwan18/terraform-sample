@@ -19,18 +19,20 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
-
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = ">= 2.0.0"
+      version = "~> 2.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.0"
     }
   }
-
   required_version = ">= 1.0.0"
 }
 
 provider "aws" {
-  region  = var.aws_provider.region
+  region = var.aws_provider.region
 
   default_tags {
     tags = {
@@ -39,3 +41,27 @@ provider "aws" {
     }
   }
 }
+
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_config.certificate_authority[0].data)
+  exec {
+    api_version = module.eks.cluster_config.exec.api_version
+    args        = module.eks.cluster_config.exec.args
+    command     = module.eks.cluster_config.exec.command
+  }
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_config.certificate_authority[0].data)
+    exec {
+      api_version = module.eks.cluster_config.exec.api_version
+      args        = module.eks.cluster_config.exec.args
+      command     = module.eks.cluster_config.exec.command
+    }
+  }
+}
+
+

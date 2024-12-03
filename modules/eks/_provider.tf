@@ -34,16 +34,16 @@ provider "kubernetes" {
   }
 }
 
-provider "helm" {
-  kubernetes {
-    host                   = local.cluster_config.host
-    cluster_ca_certificate = local.cluster_config.cluster_ca_certificate
-    exec {
-      api_version = local.cluster_config.exec.api_version
-      args        = local.cluster_config.exec.args
-      command     = local.cluster_config.exec.command
-    }
-  }
-}
+# provider "helm" {
+#   kubernetes {
+#     host                   = local.cluster_config.host
+#     cluster_ca_certificate = local.cluster_config.cluster_ca_certificate
+#     exec {
+#       api_version = local.cluster_config.exec.api_version
+#       args        = local.cluster_config.exec.args
+#       command     = local.cluster_config.exec.command
+#     }
+#   }
+# }
 
 
