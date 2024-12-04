@@ -4,3 +4,4 @@ ssh-key/
 terraform.tfvars
 tmp.yaml
 outline
+k3s

@@ -17,11 +17,11 @@ module "eks" {
 }
 
 module "istio" {
-  source = "./modules/helm/istio"
+  source = "./modules/add-on/istio"
 }
 
 module "monitor" {
-  source = "./modules/helm/monitor"
+  source = "./modules/add-on/monitor"
   ingress_name = module.istio.istio_ingress_name
   nlb_endpoint = module.istio.nlb_endpoint
   dns = {
@@ -31,14 +31,14 @@ module "monitor" {
 }
 
 module "kiali" {
-  source = "./modules/helm/kiali"
+  source = "./modules/add-on/kiali"
   ingress_name = module.istio.istio_ingress_name
   nlb_endpoint = module.istio.nlb_endpoint
   dns = "kiali.lab.one2.cloud"
 }
 
 module "bookinfo" {
-  source = "./modules/helm/bookinfo"
+  source = "./modules/add-on/bookinfo"
   ingress_name = var.ingress_name
   nlb_endpoint = var.nlb_endpoint
   dns = "bookinfo.lab.one2.cloud"
