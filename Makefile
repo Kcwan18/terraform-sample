@@ -2,7 +2,7 @@
 BUCKET_NAME=kcwan-iac-terraform-sample
 TABLE_NAME=kcwan-iac-terraform-sample-lockid
 REGION=ap-southeast-1
-MODULE ?= k3s  # Default value if not specified
+
 APPROVE ?= false  # Default to false, can be overridden with APPROVE=true
 
 # Phony targets to avoid conflicts with files of the same name
@@ -59,7 +59,7 @@ list-modules:
 	@find modules -mindepth 1 -type d -exec basename {} \; | sort | uniq
 
 # Apply specified module
-apply:
+terraform:
 	@if [ -z "$$(find modules -type d -name "$(MODULE)")" ]; then \
 		echo "Error: Module '$(MODULE)' not found"; \
 		exit 1; \
@@ -67,9 +67,9 @@ apply:
 	@echo "Applying module $(MODULE)..."
 	@terraform init
 	@if [ "$(APPROVE)" = "true" ]; then \
-		terraform apply -target=module.$(MODULE) -auto-approve; \
+		terraform $(ACTION) -target=module.$(MODULE) -auto-approve; \
 	else \
-		terraform apply -target=module.$(MODULE); \
+		terraform $(ACTION) -target=module.$(MODULE); \
 	fi
 
 # Destroy specified module

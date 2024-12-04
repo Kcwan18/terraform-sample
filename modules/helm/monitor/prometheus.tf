@@ -30,14 +30,14 @@ resource "kubernetes_manifest" "prometheus_gateway" {
       namespace: ${kubernetes_namespace.monitor.metadata[0].name}
     spec:
       selector:
-        istio: ${var.istio_ingress.name}
+        istio: ${var.ingress_name}
       servers:
       - port:
           number: 80
           name: http
           protocol: HTTP
         hosts:
-        - ${var.domain.prometheus}
+        - ${var.dns.prometheus}
   YAML
   )
   depends_on = [helm_release.prometheus]
@@ -53,7 +53,7 @@ resource "kubernetes_manifest" "prometheus_virtualservice" {
       namespace: ${kubernetes_namespace.monitor.metadata[0].name}
     spec:
       hosts:
-      - ${var.domain.prometheus}
+      - ${var.dns.prometheus}
       gateways:
       - prometheus-gateway
       http:
@@ -70,8 +70,8 @@ resource "kubernetes_manifest" "prometheus_virtualservice" {
 # Create DNS record for Prometheus
 resource "aws_route53_record" "prometheus" {
   zone_id = data.aws_route53_zone.lab.zone_id
-  name    = var.domain.prometheus
+  name    = var.dns.prometheus
   type    = "CNAME"
   ttl     = "300"
-  records = [var.istio_ingress.nlb_endpoint]
+  records = [var.nlb_endpoint]
 }

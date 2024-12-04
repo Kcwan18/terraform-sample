@@ -9,10 +9,10 @@ resource "kubernetes_manifest" "bookinfo_gateway" {
       namespace: ${kubernetes_namespace.bookinfo.metadata[0].name}
     spec:
       selector:
-        istio: ${var.istio_ingress.name}
+        istio: ${var.ingress_name}
       servers:
       - port:
-          number: 8080
+          number: 80
           name: http
           protocol: HTTP
         hosts:
@@ -58,8 +58,8 @@ resource "kubernetes_manifest" "bookinfo_virtualservice" {
 
 resource "aws_route53_record" "bookinfo" {
   zone_id = data.aws_route53_zone.lab.zone_id
-  name    = var.domain.bookinfo
+  name    = var.dns
   type    = "CNAME"
   ttl     = "300"
-  records = [var.istio_ingress.nlb_endpoint]
+  records = [var.nlb_endpoint]
 }

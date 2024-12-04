@@ -22,25 +22,26 @@ module "istio" {
 
 module "monitor" {
   source = "./modules/helm/monitor"
-  istio_ingress = {
-    name = module.istio.istio_ingress_name
-    nlb_endpoint = module.istio.nlb_endpoint
+  ingress_name = module.istio.istio_ingress_name
+  nlb_endpoint = module.istio.nlb_endpoint
+  dns = {
+    prometheus = "prometheus.lab.one2.cloud"
+    grafana = "grafana.lab.one2.cloud"
   }
 }
 
 module "kiali" {
   source = "./modules/helm/kiali"
-  istio_ingress = {
-    name = module.istio.istio_ingress_name
-    nlb_endpoint = module.istio.nlb_endpoint
-  }
+  ingress_name = module.istio.istio_ingress_name
+  nlb_endpoint = module.istio.nlb_endpoint
+  dns = "kiali.lab.one2.cloud"
 }
 
 module "bookinfo" {
   source = "./modules/helm/bookinfo"
-  istio_ingress = {
-    name = module.istio.istio_ingress_name
-    nlb_endpoint = module.istio.nlb_endpoint
-  }
+  ingress_name = var.ingress_name
+  nlb_endpoint = var.nlb_endpoint
+  dns = "bookinfo.lab.one2.cloud"
+
 }
 
