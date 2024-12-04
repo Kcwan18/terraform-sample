@@ -36,4 +36,11 @@ module "kiali" {
   }
 }
 
-# a
+module "bookinfo" {
+  source = "./modules/helm/bookinfo"
+  istio_ingress = {
+    name = module.istio.istio_ingress_name
+    nlb_endpoint = module.istio.nlb_endpoint
+  }
+}
+

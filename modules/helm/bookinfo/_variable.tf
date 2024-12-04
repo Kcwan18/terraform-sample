@@ -24,3 +24,11 @@ data "aws_route53_zone" "lab" {
   name = "lab.one2.cloud"
 }
 
+variable "domain" {
+  type = object({
+    bookinfo = string
+  })
+  default = {
+    bookinfo = "bookinfo.lab.one2.cloud"
+  }
+}

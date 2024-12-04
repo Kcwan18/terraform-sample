@@ -2,17 +2,17 @@
 
 resource "kubernetes_manifest" "bookinfo_gateway" {
   manifest = yamldecode(<<-YAML
-    apiVersion: networking.istio.io/v1alpha3
+    apiVersion: networking.istio.io/v1
     kind: Gateway
     metadata:
       name: bookinfo-gateway
-      namespace: bookinfo
+      namespace: ${kubernetes_namespace.bookinfo.metadata[0].name}
     spec:
       selector:
         istio: ${var.istio_ingress.name}
       servers:
       - port:
-          number: 80
+          number: 8080
           name: http
           protocol: HTTP
         hosts:
@@ -24,11 +24,11 @@ resource "kubernetes_manifest" "bookinfo_gateway" {
 
 resource "kubernetes_manifest" "bookinfo_virtualservice" {
   manifest = yamldecode(<<-YAML
-    apiVersion: networking.istio.io/v1alpha3
+    apiVersion: networking.istio.io/v1
     kind: VirtualService
     metadata:
       name: bookinfo
-      namespace: bookinfo
+      namespace: ${kubernetes_namespace.bookinfo.metadata[0].name}
     spec:
       hosts:
       - "*"
@@ -54,4 +54,12 @@ resource "kubernetes_manifest" "bookinfo_virtualservice" {
   YAML
   )
   depends_on = [kubernetes_manifest.bookinfo_gateway]
+}
+
+resource "aws_route53_record" "bookinfo" {
+  zone_id = data.aws_route53_zone.lab.zone_id
+  name    = var.domain.bookinfo
+  type    = "CNAME"
+  ttl     = "300"
+  records = [var.istio_ingress.nlb_endpoint]
 }
